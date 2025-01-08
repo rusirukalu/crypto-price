@@ -1,31 +1,97 @@
-import Chart from './components/Chart';
-import { CurrencySelector, DateRangePicker } from './components/FormInputs';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
-function App() {
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+const App = () => {
+  const [currencyPairs, setCurrencyPairs] = useState([]);
+  const [selectedPair, setSelectedPair] = useState('BTCUSDT');
+  const [priceData, setPriceData] = useState([]);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  useEffect(() => {
+    // Fetch available trading pairs from Binance API
+    axios.get('https://api.binance.com/api/v3/exchangeInfo')
+      .then(response => {
+        const pairs = response.data.symbols
+          .filter(symbol => symbol.status === 'TRADING')
+          .map(symbol => symbol.symbol);
+        setCurrencyPairs(pairs);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (selectedPair && startDate && endDate) {
+      // Fetch historical price data for the selected currency pair
+      const fetchPriceData = async () => {
+        try {
+          const response = await axios.get(
+            `https://api.binance.com/api/v3/klines`, {
+              params: {
+                symbol: selectedPair,
+                interval: '1d', // Daily prices
+                startTime: new Date(startDate).getTime(),
+                endTime: new Date(endDate).getTime(),
+              }
+            }
+          );
+          const prices = response.data.map(item => ({
+            x: new Date(item[0]),
+            y: parseFloat(item[4]) // Closing price
+          }));
+          setPriceData(prices);
+        } catch (error) {
+          console.error('Error fetching price data:', error);
+        }
+      };
+      fetchPriceData();
+    }
+  }, [selectedPair, startDate, endDate]);
+
+  const chartData = {
+    labels: priceData.map(item => item.x),
+    datasets: [
+      {
+        label: `${selectedPair} Price History`,
+        data: priceData.map(item => item.y),
+        borderColor: 'rgba(75,192,192,1)',
+        backgroundColor: 'rgba(75,192,192,0.2)',
+        fill: true,
+      }
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-gray-800 to-black text-white">
-      <div className="container mx-auto p-6">
-        {/* Header */}
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600">
-          Crypto Price Chart
-        </h1>
-
-        {/* Main Content */}
-        <div className="flex flex-col items-center space-y-8">
-          {/* Selection Panel */}
-          <div className="w-full max-w-2xl bg-gray-800 bg-opacity-75 rounded-lg shadow-lg p-6 space-y-6">
-            <CurrencySelector />
-            <DateRangePicker />
-          </div>
-
-          {/* Chart Section */}
-          <div className="w-full max-w-4xl bg-gray-900 bg-opacity-80 rounded-lg shadow-xl p-6">
-            <Chart />
-          </div>
-        </div>
+    <div className="container">
+      <h1>Cryptocurrency Price Visualizer</h1>
+      <div className="controls">
+        <select
+          value={selectedPair}
+          onChange={(e) => setSelectedPair(e.target.value)}
+        >
+          {currencyPairs.map(pair => (
+            <option key={pair} value={pair}>
+              {pair}
+            </option>
+          ))}
+        </select>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
       </div>
+      <Line data={chartData} />
     </div>
   );
-}
+};
 
 export default App;
