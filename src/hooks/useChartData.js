@@ -4,9 +4,7 @@ import { fetchChartData } from '../redux/slices/chartDataSlice';
 
 export const useChartData = () => {
   const dispatch = useDispatch();
-  const { symbol, interval, startTime, endTime } = useSelector(
-    (state) => state.ui
-  );
+  const { symbol, interval, startTime, endTime } = useSelector((state) => state.ui);
 
   useEffect(() => {
     if (startTime && endTime && startTime < endTime) {
