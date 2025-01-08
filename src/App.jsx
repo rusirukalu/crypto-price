@@ -1,11 +1,7 @@
-import { useChartData } from './hooks/useChartData';
-import CurrencySelector from './components/CurrencySelector';
-import DateRangePicker from './components/DateRangePicker';
 import Chart from './components/Chart';
+import { CurrencySelector, DateRangePicker } from './components/FormInputs';
 
 function App() {
-  useChartData();
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-gray-800 to-black text-white">
       <div className="container mx-auto p-6">
