@@ -10,7 +10,9 @@ export const fetchKlineData = async (symbol, interval, startTime, endTime) => {
   };
 
   try {
-    const response = await axios.get('https://api.binance.com/api/v3/klines', { params });
+    const response = await axios.get('https://api.binance.com/api/v3/klines', {
+      params,
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -18,7 +20,9 @@ export const fetchKlineData = async (symbol, interval, startTime, endTime) => {
       throw new Error(`Binance API Error: ${error.response.data.msg}`);
     } else if (error.request) {
       // The request was made but no response was received
-      throw new Error('No response from Binance API. Please check your network connection.');
+      throw new Error(
+        'No response from Binance API. Please check your network connection.'
+      );
     } else {
       // Something else happened
       throw new Error(`Error: ${error.message}`);

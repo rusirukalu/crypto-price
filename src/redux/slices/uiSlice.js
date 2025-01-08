@@ -24,5 +24,6 @@ const uiSlice = createSlice({
   },
 });
 
-export const { setSymbol, setInterval, setStartTime, setEndTime } = uiSlice.actions;
+export const { setSymbol, setInterval, setStartTime, setEndTime } =
+  uiSlice.actions;
 export default uiSlice.reducer;

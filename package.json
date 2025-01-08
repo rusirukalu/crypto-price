@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint src/**/*.{js,jsx}",
     "lint:css": "stylelint src/**/*.css",
+    "format": "prettier --write .",
     "preview": "vite preview"
   },
   "dependencies": {

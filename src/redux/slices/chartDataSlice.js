@@ -1,17 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchKlineData } from '../../api/binanceApi';
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
 
 export const fetchChartData = createAsyncThunk(
   'chartData/fetchChartData',
-  async ({ symbol, interval, startTime, endTime }, { rejectWithValue }) => { 
-    try { 
-        const data = await fetchKlineData(symbol, interval, startTime, endTime); 
-        return data; 
-    } catch (error) { 
-        return rejectWithValue(error.message); 
-    } 
+  async ({ symbol, interval, startTime, endTime }, { rejectWithValue }) => {
+    try {
+      const data = await fetchKlineData(symbol, interval, startTime, endTime);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
+  }
 );
 
 const chartDataSlice = createSlice({

@@ -12,17 +12,17 @@ const CurrencySelector = () => {
   };
 
   return (
-    <select 
-        value={symbol} 
-        onChange={handleChange} 
-        className="mb-4 p-2 border rounded w-full"
-        aria-label="Select Cryptocurrency Pair"
+    <select
+      value={symbol}
+      onChange={handleChange}
+      className="mb-4 p-2 border rounded w-full"
+      aria-label="Select Cryptocurrency Pair"
     >
-        {currencyPairs.map((pair) => (
-            <option key={pair} value={pair}>
-            {pair.slice(0, -4)} / {pair.slice(-4)}
-            </option>
-        ))}
+      {currencyPairs.map((pair) => (
+        <option key={pair} value={pair}>
+          {pair.slice(0, -4)} / {pair.slice(-4)}
+        </option>
+      ))}
     </select>
   );
 };
