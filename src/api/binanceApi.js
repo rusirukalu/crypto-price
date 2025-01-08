@@ -1,23 +1,31 @@
 import axios from 'axios';
 
-const BACKEND_URL = 'http://localhost:3001/api/klines';
-
 export const fetchKlineData = async (symbol, interval, startTime, endTime) => {
-  const params = { 
-    symbol, 
-    interval, 
-    startTime, 
-    endTime 
-};
+  const params = {
+    symbol,
+    interval,
+    startTime,
+    endTime,
+    limit: 1000, // Binance's maximum limit for klines
+  };
 
-
-try {
-    // Request data from the backend server
-    const response = await axios.get(BACKEND_URL, { params });
-    console.log('API Response:', response.data); // Log the entire response
+  try {
+    const response = await axios.get('https://api.binance.com/api/v3/klines', {
+      params,
+    });
     return response.data;
   } catch (error) {
-    console.error('API Error:', error.response ? error.response.data : error.message);
-    throw new Error(error.response?.data?.msg || 'API request failed');
+    if (error.response) {
+      // The server responded with a status code outside of 2xx
+      throw new Error(`Binance API Error: ${error.response.data.msg}`);
+    } else if (error.request) {
+      // The request was made but no response was received
+      throw new Error(
+        'No response from Binance API. Please check your network connection.'
+      );
+    } else {
+      // Something else happened
+      throw new Error(`Error: ${error.message}`);
+    }
   }
 };

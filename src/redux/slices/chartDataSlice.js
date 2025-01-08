@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchKlineData } from '../../api/binanceApi';
+import { toast } from 'react-toastify';
 
 export const fetchChartData = createAsyncThunk(
   'chartData/fetchChartData',
   async ({ symbol, interval, startTime, endTime }, { rejectWithValue }) => {
     try {
       const data = await fetchKlineData(symbol, interval, startTime, endTime);
-      console.log('Fetched data:', data); // Log data to inspect
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -32,7 +32,9 @@ const chartDataSlice = createSlice({
       })
       .addCase(fetchChartData.rejected, (state, action) => {
         state.status = 'failed';
+        state.error = action.error.message;
         state.error = action.payload || 'Failed to fetch data';
+        toast.error(state.error);
       });
   },
 });

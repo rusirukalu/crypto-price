@@ -1,13 +1,9 @@
 import { Line } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
 import 'chart.js/auto';
-import 'chartjs-adapter-date-fns';
 
 const Chart = () => {
-  const chartDataState = useSelector((state) => state.chartData);  
   const { data, status, error } = useSelector((state) => state.chartData);
-
-  console.log('Redux state:', chartDataState); // Log entire chartData state to check updates
 
   if (status === 'loading') {
     return (
@@ -25,42 +21,29 @@ const Chart = () => {
     );
   }
 
-  if (!data || !data.length === 0) {
-    console.error('No valid data available for chart rendering.');
-    return;
+  if (!data.length) {
+    return (
+      <p className="text-center text-yellow-400 font-semibold">
+        {error || 'An unexpected error occurred. Please try again later.'}
+      </p>
+    );
   }
-
-  if (data.some(item => item[4] === undefined || item[0] === undefined)) {
-    return <p className="text-center text-red-500">Invalid or incomplete data received.</p>;
-  }
-  
-
-  console.log('Chart data:', data); // Log data to inspect
 
   const chartData = {
-    labels: data.map((item) => {
-      if (item && item[0]) {
-        return new Date(item[0]).toLocaleDateString();
-      }
-      return '';
-    }),
+    labels: data.map((item) => new Date(item[0]).toLocaleDateString()),
     datasets: [
       {
         label: 'Closing Price',
-        data: data.map((item) => {
-          if (item && item[4]) {
-            return parseFloat(item[4]);
-          }
-          return null; // Handle invalid data
-        }),
-        borderColor: '#3182CE',
-        backgroundColor: 'rgba(49, 130, 206, 0.2)',
-        pointRadius: 2,
+        data: data.map((item) => parseFloat(item[4])),
+        borderColor: '#38BDF8', // Light blue
+        backgroundColor: 'rgba(56, 189, 248, 0.2)', // Light blue with opacity
+        pointRadius: 3,
+        pointBackgroundColor: '#1E3A8A', // Darker blue
+        borderWidth: 2,
+        tension: 0.3, // Smooth lines
       },
     ],
   };
-  
-  
 
   const options = {
     responsive: true,
