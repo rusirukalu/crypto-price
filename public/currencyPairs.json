@@ -1,0 +1,35 @@
+{
+    "currencyPairs": [
+      {
+        "pair": "BTC / USDT"
+      },
+      {
+        "pair": "ETH / USDT"
+      },
+      {
+        "pair": "BNB / USDT"
+      },
+      {
+        "pair": "XRP / USDT"
+      },
+      {
+        "pair": "ADA / USDT"
+      },
+      {
+        "pair": "SOL / USDT"
+      },
+      {
+        "pair": "LTC / USDT"
+      },
+      {
+        "pair": "DOT / USDT"
+      },
+      {
+        "pair": "DOGE / USDT"
+      },
+      {
+        "pair": "MATIC / USDT"
+      }
+    ]
+  }
+  

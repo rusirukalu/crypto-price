@@ -6,19 +6,20 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const App = () => {
-  const [currencyPairs, setCurrencyPairs] = useState([]);
+  // Hardcoded list of currency pairs
+  const supportedPairs = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'XRPUSDT'];
   const [selectedPair, setSelectedPair] = useState('');
   const [priceData, setPriceData] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
+  const today = new Date().toISOString().split("T")[0];
 
   const formatPairDisplay = (pair) => {
     if (!pair) return 'Select Trading Pair';
-    return pair.replace(/([A-Za-z]+)([A-Za-z]+)$/, '$1 $2');
+    return pair.slice(0, 3) + ' / ' + pair.slice(3);
   };
 
   const formatPrice = (price) => {
@@ -39,18 +40,6 @@ const App = () => {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
-    axios.get('https://api.binance.com/api/v3/exchangeInfo')
-      .then(response => {
-        const pairs = response.data.symbols
-          .filter(symbol => symbol.status === 'TRADING')
-          .map(symbol => symbol.symbol);
-        setCurrencyPairs(pairs);
-      })
-      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -147,10 +136,6 @@ const App = () => {
     }
   };
 
-  const filteredPairs = currencyPairs.filter(pair =>
-    pair.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -194,26 +179,8 @@ const App = () => {
 
                 {isSelectOpen && (
                   <div className="absolute z-50 w-full mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl max-h-[300px] overflow-y-auto custom-scrollbar">
-                    <div className="p-2">
-                      <input
-                        type="text"
-                        placeholder="Search pairs..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
                     <div className="py-2">
-                      <button
-                        className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-700/50 hover:text-white transition-colors"
-                        onClick={() => {
-                          setSelectedPair('');
-                          setIsSelectOpen(false);
-                        }}
-                      >
-                        Select Trading Pair
-                      </button>
-                      {filteredPairs.map((pair) => (
+                      {supportedPairs.map((pair) => (
                         <button
                           key={pair}
                           className={`w-full px-4 py-2 text-left hover:bg-gray-700/50 transition-colors ${
@@ -241,6 +208,7 @@ const App = () => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                max={today}
                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </div>
@@ -253,6 +221,7 @@ const App = () => {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                max={today}
                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </div>
